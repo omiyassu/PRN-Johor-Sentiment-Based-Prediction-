@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dashboard Analisis Sentimen Media Sosial dan Ramalan Kemenangan Pilihan Raya Negeri (PRN) Johor ke-16. Kemas kini simulasi swing politik daerah Johor.">
+  <title>PRN Johor 16: Sentiment & Prediction Dashboard (LIVE 2026)</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js for premium data visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Navigation / Header -->
+  <header>
+    <div class="logo-container">
+      <h1>PRN JOHOR 16 SENTIMENT PROJECTION</h1>
+      <p id="system-status">Sistem Ramalan Berasaskan Sentimen Media Sosial • Kemas Kini Hari Mengundi (11 Julai 2026)</p>
+    </div>
+    <div class="election-badge" id="live-badge">PRN JOHOR LIVE</div>
+  </header>
+
+  <!-- Dashboard Container -->
+  <main>
+    
+    <!-- Top Row: Global Stats & Seat Bar (Full Width) -->
+    <section class="card full-width" id="summary-section">
+      <h2 class="card-title">Projeksi Kerusi Dewan Undangan Negeri (DUN) Johor <span>Kekosongan: 56 Kerusi • Majoriti Mudah: 29 Kerusi</span></h2>
+      
+      <!-- Projection Progress Bar -->
+      <div class="projection-container">
+        <div class="coalition-bars" id="projection-bar">
+          <div class="bar-segment bn-bar" id="bar-bn" style="width: 45%;">BN (25)</div>
+          <div class="bar-segment ph-bar" id="bar-ph" style="width: 25%;">PH (14)</div>
+          <div class="bar-segment pn-bar" id="bar-pn" style="width: 28%;">PN (16)</div>
+          <div class="bar-segment oth-bar" id="bar-oth" style="width: 2%;">OTH (1)</div>
+        </div>
+        <div class="majority-marker">
+          <div class="majority-line"></div>
+          <div class="majority-label">Tanda Majoriti (29 Kerusi)</div>
+        </div>
+      </div>
+
+      <!-- Stat Cards Grid -->
+      <div class="summary-grid" style="margin-top: 1.5rem;">
+        <div class="card stat-card" id="stat-bn">
+          <span class="stat-label" style="color: var(--bn-color)">Barisan Nasional</span>
+          <span class="stat-value" id="val-bn">25</span>
+          <span class="stat-sub" id="sub-bn">Menteri Besar: Datuk Onn Hafiz Ghazi</span>
+        </div>
+        <div class="card stat-card" id="stat-ph">
+          <span class="stat-label" style="color: var(--ph-color)">Pakatan Harapan</span>
+          <span class="stat-value" id="val-ph">14</span>
+          <span class="stat-sub" id="sub-ph">Ketua Pembangkang: Liew Chin Tong</span>
+        </div>
+        <div class="card stat-card" id="stat-pn">
+          <span class="stat-label" style="color: var(--pn-color)">Perikatan Nasional</span>
+          <span class="stat-value" id="val-pn">16</span>
+          <span class="stat-sub" id="sub-pn">Pengerusi Negeri: Datuk Dr. Sahruddin Jamal</span>
+        </div>
+        <div class="card stat-card" id="stat-oth">
+          <span class="stat-label" style="color: var(--oth-color)">Bebas & Lain-lain</span>
+          <span class="stat-value" id="val-oth">1</span>
+          <span class="stat-sub" id="sub-oth">MUDA, Bebas, PBM, etc.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Column 1: Control Panel, Map, and Seats List -->
+    <div class="dashboard-split-left" style="display: flex; flex-direction: column; gap: 1.5rem;">
+      
+      <!-- Swing Factors Card -->
+      <section class="card" id="swing-card">
+        <h2 class="card-title">Simulasi & Larasan Swing Sentimen Politik Daerah <span class="help-icon" title="Laraskan sentimen pengundi di daerah-daerah utama untuk melihat unjuran keputusan kerusi DUN">?</span></h2>
+        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+          Sentimen media sosial dikemas kini secara berkala. Anda boleh mensimulasikan kesan pergeseran sentimen pengundi atas pagar di daerah berikut:
+        </p>
+
+        <!-- Sliders container -->
+        <div id="sliders-container">
+          <!-- Sliders will be dynamically populated by app.js -->
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+          <button class="btn-secondary" id="reset-sliders-btn" style="flex: 0 0 auto; padding: 0.5rem 1rem; font-size: 0.8rem;">Set Semula Sentimen</button>
+        </div>
+      </section>
+
+      <!-- Seats Table List Card -->
+      <section class="card" id="seats-table-card">
+        <h2 class="card-title">Senarai Unjuran Kerusi Mengikut DUN <span>Klik baris untuk butiran sentiment basline</span></h2>
+        
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+          <input type="text" id="seat-search" placeholder="Cari DUN atau daerah..." style="flex: 1; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.5rem; color: var(--text-primary); font-size: 0.8rem; outline: none;">
+          <select id="region-filter" style="background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.5rem; color: var(--text-primary); font-size: 0.8rem; outline: none;">
+            <option value="all">Semua Daerah</option>
+            <!-- Regions populated dynamically -->
+          </select>
+        </div>
+
+        <div class="seats-list-container">
+          <table id="seats-table">
+            <thead>
+              <tr>
+                <th style="width: 15%">Kod</th>
+                <th style="width: 35%">DUN</th>
+                <th style="width: 25%">Daerah</th>
+                <th style="width: 25%">Pemenang Diramal</th>
+              </tr>
+            </thead>
+            <tbody id="seats-table-body">
+              <!-- Populated by app.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- Column 2: Sentiment Tester & Visualizations -->
+    <div class="dashboard-split-right" style="display: flex; flex-direction: column; gap: 1.5rem;">
+      
+      <!-- Sentiment Analytics Charts -->
+      <section class="card" id="charts-card">
+        <h2 class="card-title">Analisis Sentimen Media Sosial Semasa <span>Kadar Sampel: 152,430 kiriman</span></h2>
+        
+        <div class="dashboard-split">
+          <div>
+            <h3 style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; text-align: center;">Pecahan Sentimen Keseluruhan</h3>
+            <div class="chart-wrapper">
+              <canvas id="sentiment-pie-chart"></canvas>
+            </div>
+          </div>
+          <div>
+            <h3 style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; text-align: center;">Sentimen Mengikut Isu Pilihan Raya</h3>
+            <div class="chart-wrapper">
+              <canvas id="issues-bar-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Live Sentiment Classifier Tester -->
+      <section class="card" id="tester-card">
+        <h2 class="card-title">Live Malay Sentiment Classifier <span>Uji sentimen komen anda secara automatik</span></h2>
+        <div class="tester-container">
+          <p style="font-size: 0.8rem; color: var(--text-secondary);">
+            Taip atau tampalkan sebarang komen dari media sosial (Facebook, Twitter/X, TikTok) dalam Bahasa Melayu untuk melihat klasifikasi sentimen serta skor unjuran kecenderungan partinya:
+          </p>
+
+          <div class="quick-samples">
+            <span class="sample-pill" data-text="Saya sangat berpuas hati dengan kepimpinan Menteri Besar Datuk Onn Hafiz Ghazi, pembangunan Johor maju dan stabil!">BN Positif</span>
+            <span class="sample-pill" data-text="Kos sara hidup makin mahal, harga makanan naik gila-gila, rakyat susah sekarang tapi menteri masih bual kosong.">Kerajaan Negatif</span>
+            <span class="sample-pill" data-text="Kestabilan masa depan negeri penting, saya harap PRN kali ini bawa perubahan politik yang telus dan adil.">Neutral Harapan</span>
+            <span class="sample-pill" data-text="PN ada tawaran yang mantap untuk orang muda Johor, mari kita tolak kronisme parti lapuk.">PN Positif</span>
+          </div>
+
+          <textarea id="tester-input" placeholder="Masukkan komen media sosial di sini (e.g. 'Onn Hafiz mantap, jalan raya Pontian bertambah baik...')..."></textarea>
+          
+          <div class="tester-actions">
+            <button class="btn-primary" id="btn-analyze">Analisis Sentimen</button>
+            <button class="btn-secondary" id="btn-clear-tester">Padam</button>
+          </div>
+
+          <!-- Result output -->
+          <div class="result-box" id="tester-result">
+            <div class="result-content" id="result-placeholder">
+              <span style="color: var(--text-muted); font-size: 0.85rem;">Menunggu input untuk dianalisis...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 Johor PRN 16 Sentiment Dashboard Project. Dibangunkan untuk tujuan penyelidikan data sains dan analisis media sosial.</p>
+    <p style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-muted);">
+      Teknologi: HTML5, Vanilla CSS, JS Lexicon Engine, Chart.js. Rujukan fail data: <a href="file:///C:/Users/User/.gemini/antigravity/scratch/johor_election_sentiment/data.js">data.js</a>
+    </p>
+  </footer>
+
+  <!-- Code Injection from local files -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
